@@ -46,7 +46,7 @@ Every destination features an itemized cost calculation:
 - **Incredible India**: Taj Mahal (Agra), Manali & Rohtang Pass, Ooty & Nilgiri Hills, Goa & Gokarna.
 
 ### 5. 🔒 Project Creator Admin Gate
-- Administration portal is strictly restricted to the **Project Creator** (`creator2026`).
+- Administration portal is strictly restricted to the **Project Creator** (`yusuf2026@gmail.com` / Master Key: `2026` or `creator2026`).
 - Secure passcode verification modal prevents unauthorized access.
 - KPI metrics tracking total UPI transaction volume, destination catalog, active bookings, and customer review moderation.
 
@@ -54,7 +54,7 @@ Every destination features an itemized cost calculation:
 - Direct connect buttons for the Creator (Yusuf):
   - 📸 **Instagram**: [@lifejourney.travels](https://instagram.com)
   - 📘 **Facebook**: [facebook.com/lifejourney.travels](https://facebook.com)
-  - 💬 **WhatsApp**: [+91 98765 43210](https://wa.me/919876543210)
+  - 💬 **WhatsApp**: [+91 74490 95202](https://wa.me/917449095202)
 
 ### 7. 💳 Real-Time UPI Simulator
 - Google Pay (GPay), PhonePe, Paytm, and BHIM QR simulator with dynamic countdown timer and transaction receipt generation.

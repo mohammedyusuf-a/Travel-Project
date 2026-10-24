@@ -302,22 +302,27 @@ function switchAuthMode(mode) {
 window.switchAuthMode = switchAuthMode;
 
 // ── Project Creator Verification Master Key ──────────────────
-const CREATOR_MASTER_KEYS = ['creator2026', 'yusuf2026', 'yusuf786', 'lifejourney2026'];
+const CREATOR_MASTER_KEYS = ['2026', 'creator2026', 'yusuf2026', 'yusuf786', 'lifejourney2026'];
 
 function handleAuthSubmit(e) {
   e.preventDefault();
   const isCreatorMode = document.getElementById('authTabCreator')?.classList.contains('active');
   const isRegMode = document.getElementById('authTabRegister')?.classList.contains('active');
-  const email = document.getElementById('authEmail').value.trim();
+  const email = document.getElementById('authEmail')?.value.trim() || '';
+  const password = document.getElementById('authPassword')?.value.trim() || '';
   const name = document.getElementById('authName')?.value.trim() || email.split('@')[0];
-  const creatorKey = document.getElementById('authCreatorKey')?.value.trim();
+  const creatorKey = document.getElementById('authCreatorKey')?.value.trim() || '';
+
+  const isCreatorEmailMatch = email.toLowerCase() === 'yusuf2026@gmail.com' || email.toLowerCase() === 'creator@lifejourney.com';
+  const isCreatorPassMatch = password === 'yusuf2026' || password === 'creator2026';
+  const isMasterKeyValid = CREATOR_MASTER_KEYS.includes(creatorKey);
 
   if (isCreatorMode) {
-    if (CREATOR_MASTER_KEYS.includes(creatorKey)) {
+    if (isMasterKeyValid || (isCreatorEmailMatch && isCreatorPassMatch)) {
       State.user = {
         id: 'creator_master',
         name: 'Yusuf (Project Creator)',
-        email: email || 'creator@lifejourney.com',
+        email: email || 'yusuf2026@gmail.com',
         role: 'admin',
         isCreatorVerified: true,
         balance: State.user.balance || 150000,
@@ -335,6 +340,26 @@ function handleAuthSubmit(e) {
       showToast('Invalid Creator Master Key. Access strictly restricted to Project Creator.', 'error', '🔒');
       return;
     }
+  }
+
+  // Automatic admin unlock if logging in through normal Sign In tab with Creator credentials
+  if (!isRegMode && isCreatorEmailMatch && isCreatorPassMatch) {
+    State.user = {
+      id: 'creator_master',
+      name: 'Yusuf (Project Creator)',
+      email: email,
+      role: 'admin',
+      isCreatorVerified: true,
+      balance: State.user.balance || 150000,
+      avatar: 'YU',
+      isLoggedIn: true
+    };
+    saveState();
+    updateUserUI();
+    closeModal('authModal');
+    showToast('Welcome back, Project Creator! Admin Portal unlocked. 👑', 'success', '⚡');
+    navigateTo('admin');
+    return;
   }
 
   // Normal Traveler login / signup
@@ -364,7 +389,7 @@ function verifyCreatorFromModal(e) {
     State.user = {
       id: 'creator_master',
       name: 'Yusuf (Project Creator)',
-      email: 'creator@lifejourney.com',
+      email: 'yusuf2026@gmail.com',
       role: 'admin',
       isCreatorVerified: true,
       balance: State.user.balance || 150000,
