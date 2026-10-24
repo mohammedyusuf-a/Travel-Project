@@ -35,27 +35,41 @@
 </head>
 <body>
 
-  <!-- ===================== NAVIGATION ===================== -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-brand" onclick="navigateTo('dashboard')" style="cursor:pointer" title="Life Journey Home">
-      <div class="brand-icon">✈️</div>
-      <span class="brand-name">Life Journey</span>
+  <!-- ===================== TOP HEADER NAVBAR ===================== -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <!-- Sidebar Toggle Button -->
+      <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Navigation Sidebar (☰)" aria-label="Toggle Sidebar">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+
+      <!-- Brand Logo -->
+      <div class="nav-brand" onclick="navigateTo('dashboard')" style="cursor:pointer" title="Life Journey — Global Travel & UPI Portal">
+        <div class="brand-icon">✈️</div>
+        <div class="brand-text-wrap">
+          <span class="brand-name">Life Journey</span>
+          <span class="brand-sub">World Travel & UPI</span>
+        </div>
+      </div>
+
+      <!-- Live Production Render Link -->
+      <a href="https://travel-project-z9lw.onrender.com" target="_blank" rel="noopener noreferrer" class="nav-live-badge" title="Live Website on Render (Opens in new tab)">
+        <span class="live-dot"></span>
+        <span class="live-text">Live Demo ↗</span>
+      </a>
     </div>
 
-    <div class="nav-links" id="navLinks">
-      <a href="#" class="nav-link active" data-page="dashboard" id="nav-dashboard">Dashboard</a>
-      <a href="#" class="nav-link" data-page="explore" id="nav-explore">Explore (30)</a>
-      <a href="#" class="nav-link nav-highlight-link" data-page="guide" id="nav-guide">Tour Guide 🧭</a>
-      <a href="#" class="nav-link" data-page="trips" id="nav-trips">My Trips</a>
-      <a href="#" class="nav-link" data-page="itinerary" id="nav-itinerary">Itinerary</a>
-      <a href="#" class="nav-link" data-page="budget" id="nav-budget">Budget (₹)</a>
-      <a href="#" class="nav-link" data-page="map" id="nav-map">Live Map (Satellite 🛰️)</a>
-      <a href="#" class="nav-link" onclick="openModal('aboutModal'); return false;" id="nav-about">About Me 📸</a>
-      <a href="https://travel-project-z9lw.onrender.com" target="_blank" rel="noopener noreferrer" class="nav-link" style="color:#10b981;font-weight:700" title="Visit Live Production Website">Live Demo ↗</a>
-      <!-- Admin Portal strictly restricted to Project Creator -->
-      <a href="#" class="nav-link nav-admin-link" data-page="admin" id="nav-admin" style="display:none">Admin Portal ⚡</a>
+    <!-- Center Search Bar -->
+    <div class="nav-center">
+      <div class="header-search-box">
+        <span class="hsb-icon">🔍</span>
+        <input type="text" id="headerGlobalSearch" placeholder="Search 30 destinations (Dubai, Kyoto, Manali, Santorini)..." class="hsb-input" />
+      </div>
     </div>
 
+    <!-- Right Actions: Wallet, Theme, Weather & Auth -->
     <div class="nav-actions">
       <!-- Wallet Balance Pill -->
       <div class="wallet-pill" id="walletPillBtn" title="Life Journey Wallet Balance (INR) · Click to Add Money with UPI">
@@ -70,13 +84,121 @@
       <!-- Weather Toggle -->
       <button class="btn-weather-toggle" id="weatherToggle" title="Live Weather">🌤️</button>
 
-      <!-- User Avatar / Profile Menu -->
-      <div class="user-avatar" id="userAvatarBtn" title="My Profile & Account">YU</div>
-      <button class="btn-primary" id="loginNavBtn" style="padding:0.45rem 1.1rem;font-size:0.85rem">Sign In / Sign Up</button>
+      <!-- User Auth Section -->
+      <div class="nav-auth-container" id="navAuthContainer">
+        <!-- Logged Out Button -->
+        <button class="btn-primary btn-header-signin" id="loginNavBtn">
+          <span>🔑</span>
+          <span>Sign In / Sign Up</span>
+        </button>
+
+        <!-- Logged In User Pill -->
+        <div class="header-user-pill" id="headerUserPill" style="display:none">
+          <div class="user-avatar" id="userAvatarBtn">YU</div>
+          <div class="user-pill-info">
+            <span class="user-pill-name" id="userPillName">Yusuf</span>
+            <span class="user-pill-role" id="userPillRole">Traveler</span>
+          </div>
+          <span class="user-pill-caret">▾</span>
+
+          <!-- Dropdown Menu -->
+          <div class="user-dropdown-menu" id="userDropdownMenu">
+            <div class="udm-header">
+              <div class="udm-name" id="dropdownUserName">Yusuf</div>
+              <div class="udm-email" id="dropdownUserEmail">traveler@lifejourney.com</div>
+              <div class="udm-badge" id="dropdownUserBadge">Verified Traveler</div>
+            </div>
+            <div class="udm-divider"></div>
+            <button class="udm-item" onclick="openModal('profileModal')">
+              <span>👤</span> My Profile & Wallet (₹)
+            </button>
+            <button class="udm-item" id="dropdownAdminLink" onclick="navigateTo('admin')" style="display:none">
+              <span>⚡</span> Creator Admin Portal
+            </button>
+            <button class="udm-item" onclick="openModal('aboutModal')">
+              <span>📸</span> About Project Creator
+            </button>
+            <div class="udm-divider"></div>
+            <button class="udm-item udm-danger" onclick="logoutUser()">
+              <span>🚪</span> Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== SIDEBAR NAVIGATION (OPTIONS ON THE SIDE) ===================== -->
+  <aside class="app-sidebar" id="appSidebar">
+    <div class="sidebar-inner">
+      <!-- Group 1: Main Exploration -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">MAIN EXPLORATION</div>
+        <a href="#" class="sidebar-link active" data-page="dashboard" id="slink-dashboard">
+          <span class="slink-icon">📊</span>
+          <span class="slink-label">Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-link slink-highlight" data-page="guide" id="slink-guide">
+          <span class="slink-icon">🧭</span>
+          <span class="slink-label">Tour Guide</span>
+          <span class="slink-tag highlight">NEW</span>
+        </a>
+        <a href="#" class="sidebar-link" data-page="explore" id="slink-explore">
+          <span class="slink-icon">🌍</span>
+          <span class="slink-label">Explore Places</span>
+          <span class="slink-tag">30</span>
+        </a>
+        <a href="#" class="sidebar-link" data-page="map" id="slink-map">
+          <span class="slink-icon">🛰️</span>
+          <span class="slink-label">Satellite Live Map</span>
+        </a>
+      </div>
+
+      <!-- Group 2: My Travels -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">MY TRAVELS</div>
+        <a href="#" class="sidebar-link" data-page="trips" id="slink-trips">
+          <span class="slink-icon">✈️</span>
+          <span class="slink-label">My Trips</span>
+        </a>
+        <a href="#" class="sidebar-link" data-page="itinerary" id="slink-itinerary">
+          <span class="slink-icon">📅</span>
+          <span class="slink-label">Itinerary Planner</span>
+        </a>
+        <a href="#" class="sidebar-link" data-page="budget" id="slink-budget">
+          <span class="slink-icon">💰</span>
+          <span class="slink-label">Budget & Expenses (₹)</span>
+        </a>
+      </div>
+
+      <!-- Group 3: Creator & Community -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">CREATOR & LINKS</div>
+        <a href="#" class="sidebar-link" id="slink-about" onclick="openModal('aboutModal'); return false;">
+          <span class="slink-icon">📸</span>
+          <span class="slink-label">About Creator (Yusuf)</span>
+        </a>
+        <a href="https://travel-project-z9lw.onrender.com" target="_blank" rel="noopener noreferrer" class="sidebar-link slink-render">
+          <span class="slink-icon">🌐</span>
+          <span class="slink-label">Live Demo (Render)</span>
+          <span class="slink-arrow">↗</span>
+        </a>
+        <a href="#" class="sidebar-link slink-admin" data-page="admin" id="slink-admin" style="display:none">
+          <span class="slink-icon">⚡</span>
+          <span class="slink-label">Creator Admin Portal</span>
+          <span class="slink-tag admin-tag" id="slinkAdminTag">👑</span>
+        </a>
+      </div>
     </div>
 
-    <button class="nav-hamburger" id="navHamburger">☰</button>
-  </nav>
+    <!-- Sidebar Bottom User Profile Card -->
+    <div class="sidebar-bottom-user" id="sidebarBottomUser">
+      <!-- Populated dynamically by updateUserUI() -->
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <!-- ===================== PAGES ===================== -->
   <main class="main-content">

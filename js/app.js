@@ -143,8 +143,6 @@ function animateCount(el, target, duration = 1800) {
 
 // ── User Authentication & Profile UI ────────────────────────
 function updateUserUI() {
-  const avatarBtn = document.getElementById('userAvatarBtn');
-  const loginNavBtn = document.getElementById('loginNavBtn');
   const navBalanceText = document.getElementById('navBalanceText');
   const dashboardWalletBalance = document.getElementById('dashboardWalletBalance');
   const profileWalletAmount = document.getElementById('profileWalletAmount');
@@ -153,7 +151,22 @@ function updateUserUI() {
   const profileAvatarText = document.getElementById('profileAvatarText');
   const profileRoleBadge = document.getElementById('profileRoleBadge');
   const profileAdminBtn = document.getElementById('profileAdminBtn');
-  const navAdmin = document.getElementById('navAdmin');
+
+  // Header Elements
+  const loginNavBtn = document.getElementById('loginNavBtn');
+  const headerUserPill = document.getElementById('headerUserPill');
+  const userAvatarBtn = document.getElementById('userAvatarBtn');
+  const userPillName = document.getElementById('userPillName');
+  const userPillRole = document.getElementById('userPillRole');
+  const dropdownUserName = document.getElementById('dropdownUserName');
+  const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+  const dropdownUserBadge = document.getElementById('dropdownUserBadge');
+  const dropdownAdminLink = document.getElementById('dropdownAdminLink');
+
+  // Sidebar Elements
+  const slinkAdmin = document.getElementById('slink-admin');
+  const slinkAdminTag = document.getElementById('slinkAdminTag');
+  const sidebarBottomUser = document.getElementById('sidebarBottomUser');
 
   const formattedBalance = formatINR(State.user.balance || 0);
 
@@ -164,13 +177,23 @@ function updateUserUI() {
   const isCreator = State.user && State.user.isLoggedIn && State.user.role === 'admin' && State.user.isCreatorVerified;
 
   if (State.user && State.user.isLoggedIn) {
-    if (avatarBtn) {
-      avatarBtn.style.display = 'flex';
-      avatarBtn.textContent = State.user.avatar || 'TR';
-      avatarBtn.title = `${State.user.name} (${isCreator ? 'Project Creator' : 'Traveler'})`;
-    }
+    // Show Header Pill, Hide Login Button
     if (loginNavBtn) loginNavBtn.style.display = 'none';
+    if (headerUserPill) headerUserPill.style.display = 'flex';
 
+    if (userAvatarBtn) userAvatarBtn.textContent = State.user.avatar || 'TR';
+    if (userPillName) userPillName.textContent = State.user.name;
+    if (userPillRole) userPillRole.textContent = isCreator ? 'Creator' : 'Traveler';
+
+    if (dropdownUserName) dropdownUserName.textContent = State.user.name;
+    if (dropdownUserEmail) dropdownUserEmail.textContent = State.user.email;
+    if (dropdownUserBadge) {
+      dropdownUserBadge.textContent = isCreator ? '👑 Project Creator & Admin' : '✈️ Verified Traveler';
+      dropdownUserBadge.style.color = isCreator ? 'var(--accent-primary)' : 'var(--accent-green)';
+    }
+    if (dropdownAdminLink) dropdownAdminLink.style.display = isCreator ? 'flex' : 'none';
+
+    // Profile Modal
     if (profileNameText) profileNameText.textContent = State.user.name;
     if (profileEmailText) profileEmailText.textContent = State.user.email;
     if (profileAvatarText) profileAvatarText.textContent = State.user.avatar || 'TR';
@@ -178,18 +201,44 @@ function updateUserUI() {
       profileRoleBadge.textContent = isCreator ? '👑 Project Creator & Admin' : '✈️ Verified Traveler';
       profileRoleBadge.style.color = isCreator ? 'var(--accent-primary)' : 'var(--accent-green)';
     }
+    if (profileAdminBtn) profileAdminBtn.style.display = isCreator ? 'inline-block' : 'none';
 
-    // Admin portal visibility strictly limited to Project Creator
-    if (profileAdminBtn) {
-      profileAdminBtn.style.display = isCreator ? 'inline-block' : 'none';
-    }
-    if (navAdmin) {
-      navAdmin.style.display = isCreator ? 'inline-block' : 'none';
+    // Sidebar Admin Link
+    if (slinkAdmin) slinkAdmin.style.display = isCreator ? 'flex' : 'none';
+    if (slinkAdminTag) slinkAdminTag.textContent = '👑';
+
+    // Sidebar Bottom User Card
+    if (sidebarBottomUser) {
+      sidebarBottomUser.innerHTML = `
+        <div class="sbu-card" onclick="openModal('profileModal')">
+          <div class="user-avatar">${State.user.avatar || 'TR'}</div>
+          <div class="sbu-info">
+            <div class="sbu-name">${State.user.name}</div>
+            <div class="sbu-role">${isCreator ? '👑 Creator Admin' : '✈️ Verified Traveler'}</div>
+          </div>
+          <button class="sbu-logout-btn" onclick="event.stopPropagation(); logoutUser();" title="Sign Out">🚪</button>
+        </div>
+      `;
     }
   } else {
-    if (avatarBtn) avatarBtn.style.display = 'none';
-    if (loginNavBtn) loginNavBtn.style.display = 'inline-block';
-    if (navAdmin) navAdmin.style.display = 'none';
+    // Logged Out
+    if (loginNavBtn) loginNavBtn.style.display = 'inline-flex';
+    if (headerUserPill) headerUserPill.style.display = 'none';
+    if (dropdownAdminLink) dropdownAdminLink.style.display = 'none';
+    if (slinkAdmin) slinkAdmin.style.display = 'none';
+
+    if (sidebarBottomUser) {
+      sidebarBottomUser.innerHTML = `
+        <div class="sbu-card sbu-guest" onclick="switchAuthMode('login'); openModal('authModal');">
+          <div class="sbu-guest-icon">🔑</div>
+          <div class="sbu-info">
+            <div class="sbu-name">Guest Traveler</div>
+            <div class="sbu-sub">Click to Sign In / Sign Up</div>
+          </div>
+          <span class="sbu-arrow">→</span>
+        </div>
+      `;
+    }
   }
 
   renderProfileTxns();
@@ -334,11 +383,19 @@ function verifyCreatorFromModal(e) {
 window.verifyCreatorFromModal = verifyCreatorFromModal;
 
 function logoutUser() {
-  State.user.isLoggedIn = false;
-  State.user.isCreatorVerified = false;
-  State.user.role = 'traveler';
+  State.user = {
+    id: 'user_guest',
+    name: 'Traveler',
+    email: 'traveler@lifejourney.com',
+    role: 'traveler',
+    isCreatorVerified: false,
+    balance: 50000,
+    avatar: 'TR',
+    isLoggedIn: false
+  };
   saveState();
   updateUserUI();
+  document.getElementById('userDropdownMenu')?.classList.remove('show');
   showToast('Logged out successfully. See you on your next journey!', 'info', '👋');
   navigateTo('dashboard');
 }
@@ -735,16 +792,20 @@ function navigateTo(page) {
   }
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.nav-link, .sidebar-link').forEach(l => l.classList.remove('active'));
 
   const pageEl = document.getElementById(`page-${page}`);
   if (pageEl) pageEl.classList.add('active');
   const navEl = document.getElementById(`nav-${page}`);
   if (navEl) navEl.classList.add('active');
+  const slinkEl = document.getElementById(`slink-${page}`);
+  if (slinkEl) slinkEl.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Close mobile menu
-  document.getElementById('navLinks')?.classList.remove('open');
+  // Close mobile sidebar and dropdown if open
+  document.getElementById('appSidebar')?.classList.remove('mobile-open');
+  document.getElementById('sidebarBackdrop')?.classList.remove('active');
+  document.getElementById('userDropdownMenu')?.classList.remove('show');
 
   // Page-specific initializers
   if (page === 'map') initMap();
@@ -1617,17 +1678,35 @@ function performHeroSearch(query) {
 
 // ── Event Listeners ──────────────────────────────────────────
 function initEventListeners() {
-  // Navigation Links
-  document.querySelectorAll('.nav-link').forEach(link => {
+  // Navigation Links (both navbar and sidebar items with data-page)
+  document.querySelectorAll('[data-page]').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      navigateTo(link.dataset.page);
+      const page = link.dataset.page;
+      if (page) navigateTo(page);
     });
   });
 
-  // Mobile hamburger
-  document.getElementById('navHamburger')?.addEventListener('click', () => {
-    document.getElementById('navLinks')?.classList.toggle('open');
+  // Sidebar Toggle Button (Desktop Collapse & Mobile Drawer)
+  document.getElementById('sidebarToggleBtn')?.addEventListener('click', () => {
+    if (window.innerWidth >= 1024) {
+      document.body.classList.toggle('sidebar-collapsed');
+    } else {
+      document.getElementById('appSidebar')?.classList.toggle('mobile-open');
+      document.getElementById('sidebarBackdrop')?.classList.toggle('active');
+    }
+  });
+
+  // Mobile Backdrop Click
+  document.getElementById('sidebarBackdrop')?.addEventListener('click', () => {
+    document.getElementById('appSidebar')?.classList.remove('mobile-open');
+    document.getElementById('sidebarBackdrop')?.classList.remove('active');
+  });
+
+  // Header Global Search
+  const headerSearch = document.getElementById('headerGlobalSearch');
+  headerSearch?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') performHeroSearch(headerSearch.value);
   });
 
   // Navbar scroll effect
@@ -1667,6 +1746,19 @@ function initEventListeners() {
   // Tour Guide Destination Dropdown
   document.getElementById('tourGuideSelect')?.addEventListener('change', (e) => {
     renderTourGuidePage(parseInt(e.target.value));
+  });
+
+  // Header User Pill Dropdown
+  const headerUserPill = document.getElementById('headerUserPill');
+  const userDropdownMenu = document.getElementById('userDropdownMenu');
+  headerUserPill?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userDropdownMenu?.classList.toggle('show');
+  });
+  document.addEventListener('click', (e) => {
+    if (!headerUserPill?.contains(e.target)) {
+      userDropdownMenu?.classList.remove('show');
+    }
   });
 
   // Wallet and Profile triggers
