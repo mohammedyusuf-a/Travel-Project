@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Journey — Global Destinations, Tour Guide & UPI Portal</title>
+  <meta name="description" content="Life Journey is your all-inclusive world travel companion. Detailed Tour Guides (Enga Pora, Enna Pandram, Enna Schedule), exact Flight, Room, Bus, Food & Photographer expense breakdowns in Rupees (₹), Satellite World View, and instant UPI / GPay payments." />
+  <meta name="keywords" content="Life Journey, travel management, tour guide, itinerary, trip schedule, flight ticket cost, photographer expense, room hotel expense, UPI payment, GPay, PhonePe, INR travel guide, world destinations, satellite map" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Anti-FOUC: Default White Theme -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('lifejourney_theme') || localStorage.getItem('wander_theme') || 'white';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand" onclick="navigateTo('dashboard')" style="cursor:pointer" title="Life Journey Home">
+      <div class="brand-icon">✈️</div>
+      <span class="brand-name">Life Journey</span>
+    </div>
+
+    <div class="nav-links" id="navLinks">
+      <a href="#" class="nav-link active" data-page="dashboard" id="nav-dashboard">Dashboard</a>
+      <a href="#" class="nav-link" data-page="explore" id="nav-explore">Explore (30)</a>
+      <a href="#" class="nav-link nav-highlight-link" data-page="guide" id="nav-guide">Tour Guide 🧭</a>
+      <a href="#" class="nav-link" data-page="trips" id="nav-trips">My Trips</a>
+      <a href="#" class="nav-link" data-page="itinerary" id="nav-itinerary">Itinerary</a>
+      <a href="#" class="nav-link" data-page="budget" id="nav-budget">Budget (₹)</a>
+      <a href="#" class="nav-link" data-page="map" id="nav-map">Live Map (Satellite 🛰️)</a>
+      <a href="#" class="nav-link" onclick="openModal('aboutModal'); return false;" id="nav-about">About Me 📸</a>
+      <!-- Admin Portal strictly restricted to Project Creator -->
+      <a href="#" class="nav-link nav-admin-link" data-page="admin" id="nav-admin" style="display:none">Admin Portal ⚡</a>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Wallet Balance Pill -->
+      <div class="wallet-pill" id="walletPillBtn" title="Life Journey Wallet Balance (INR) · Click to Add Money with UPI">
+        <span class="wallet-icon">💳</span>
+        <span class="wallet-amount" id="navBalanceText">₹50,000</span>
+        <span class="wallet-add-badge">+ Add</span>
+      </div>
+
+      <!-- Theme Badge -->
+      <div class="theme-badge" id="themeBadge" title="Toggle White / Dark Theme"></div>
+
+      <!-- Weather Toggle -->
+      <button class="btn-weather-toggle" id="weatherToggle" title="Live Weather">🌤️</button>
+
+      <!-- User Avatar / Profile Menu -->
+      <div class="user-avatar" id="userAvatarBtn" title="My Profile & Account">YU</div>
+      <button class="btn-primary" id="loginNavBtn" style="padding:0.45rem 1.1rem;font-size:0.85rem">Sign In / Sign Up</button>
+    </div>
+
+    <button class="nav-hamburger" id="navHamburger">☰</button>
+  </nav>
+
+  <!-- ===================== PAGES ===================== -->
+  <main class="main-content">
+
+    <!-- ===== DASHBOARD PAGE ===== -->
+    <section class="page active" id="page-dashboard">
+      <!-- Hero -->
+      <div class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-particles" id="heroParticles"></div>
+        <div class="hero-content">
+          <div class="hero-badge">🇮🇳 Real-Time UPI & Rupee (₹) Travel Platform</div>
+          <h1 class="hero-title">Life Journey<br /><span class="gradient-text">World Travel, Perfectly Guided</span></h1>
+          <p class="hero-subtitle">Explore 30 real world destinations with day-by-day tour guide schedules (Enga Pora, Enna Pandram), exact breakdowns for flights, rooms, buses, food & personal photographer, and real satellite world maps.</p>
+          
+          <div class="hero-search">
+            <input type="text" id="heroSearch" placeholder="Search 30 destinations, cities, sights (e.g. Dubai, Santorini, Kyoto, Manali, Ooty, Taj Mahal)..." class="search-input" />
+            <button class="search-btn" id="heroSearchBtn">
+              <span>Explore</span>
+              <span>🔍</span>
+            </button>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number" data-target="195">0</span>
+              <span class="stat-label">Countries</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-target="30">0</span>
+              <span class="stat-label">Real Destinations</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-target="50000">0</span>
+              <span class="stat-label">Happy Travelers</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number" data-target="100">0</span>
+              <span class="stat-label">% Verified Guides</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="section-container">
+        <div class="quick-stats-grid">
+          <div class="quick-stat-card" id="upcomingTripsCard" onclick="navigateTo('trips')">
+            <div class="qs-icon">✈️</div>
+            <div class="qs-info">
+              <div class="qs-number" id="upcomingCount">0</div>
+              <div class="qs-label">Upcoming Trips</div>
+            </div>
+          </div>
+          <div class="quick-stat-card" onclick="navigateTo('explore')">
+            <div class="qs-icon">📍</div>
+            <div class="qs-info">
+              <div class="qs-number" id="destinationsCount">0</div>
+              <div class="qs-label">Places Saved</div>
+            </div>
+          </div>
+          <div class="quick-stat-card" onclick="navigateTo('budget')">
+            <div class="qs-icon">💰</div>
+            <div class="qs-info">
+              <div class="qs-number" id="budgetSpent">₹0</div>
+              <div class="qs-label">Budget Tracked (₹)</div>
+            </div>
+          </div>
+          <div class="quick-stat-card wallet-stat-card" id="walletStatCard">
+            <div class="qs-icon">💳</div>
+            <div class="qs-info">
+              <div class="qs-number" id="dashboardWalletBalance">₹50,000</div>
+              <div class="qs-label">Wallet Balance · Add via UPI</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tour Guide Feature Banner -->
+      <div class="section-container">
+        <div class="guide-feature-banner" onclick="navigateTo('guide')">
+          <div class="gfb-left">
+            <span class="gfb-badge">NEW FEATURE 🧭</span>
+            <h2 class="gfb-title">Dedicated Tour Guide & Day-Wise Schedules</h2>
+            <p class="gfb-desc">Enga pora (where we go), Enna pandram (what we do), and exact hourly schedule for all 30 places! Plus satellite world flight maps & transparent pricing.</p>
+            <button class="btn-primary" style="background:#ffffff;color:#0f172a;font-weight:800;border:none">
+              Open Tour Guide Page →
+            </button>
+          </div>
+          <div class="gfb-right">
+            <div class="gfb-icon-stack">
+              <span>🛰️</span>
+              <span>📸</span>
+              <span>✈️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured Destinations -->
+      <div class="section-container">
+        <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div>
+            <h2 class="section-title">✨ Featured World Destinations</h2>
+            <p class="section-sub">Curated real destinations with verified daily costs and flight breakdowns in Indian Rupees (₹)</p>
+          </div>
+          <button class="btn-primary" onclick="navigateTo('explore')" style="padding:0.5rem 1.25rem;font-size:0.85rem">View All 30 Places →</button>
+        </div>
+        <div class="destinations-grid" id="featuredDestinations"></div>
+      </div>
+
+      <!-- Verified Traveler Reviews -->
+      <div class="section-container">
+        <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem">
+          <div>
+            <div class="verified-pill">⭐ 4.9 / 5.0 (1,850+ Verified Reviews)</div>
+            <h2 class="section-title" style="margin-top:0.4rem">🌟 Verified Traveler Reviews</h2>
+            <p class="section-sub">Authentic feedback from travelers who booked tours and paid via UPI, GPay & PhonePe</p>
+          </div>
+          <button class="btn-primary" id="writeReviewBtn">✍️ Write a Review</button>
+        </div>
+        <div class="reviews-grid" id="dashboardReviewsGrid"></div>
+      </div>
+
+      <!-- Live Weather Widget -->
+      <div class="section-container" id="weatherSection">
+        <div class="section-header">
+          <h2 class="section-title">🌤️ Live Global Weather</h2>
+          <p class="section-sub">Real-time conditions and temperatures at top travel destinations</p>
+        </div>
+        <div class="weather-grid" id="weatherGrid">
+          <div class="weather-loading">Fetching live weather data...</div>
+        </div>
+      </div>
+
+      <!-- Travel Tips -->
+      <div class="section-container">
+        <div class="section-header">
+          <h2 class="section-title">💡 Travel Guidance & Smart Tips</h2>
+          <p class="section-sub">Essential advice for international and domestic journeys with Life Journey</p>
+        </div>
+        <div class="tips-grid" id="tipsGrid"></div>
+      </div>
+    </section>
+
+    <!-- ===== TOUR GUIDE PAGE (NEW!) ===== -->
+    <section class="page" id="page-guide">
+      <!-- Satellite Earth World View Background Banner -->
+      <div class="guide-satellite-hero">
+        <div class="satellite-space-orbit">
+          <div class="satellite-earth-glow"></div>
+          <div class="satellite-orbit-ring"></div>
+          <div class="satellite-stars"></div>
+        </div>
+        <div class="section-container" style="position:relative;z-index:2">
+          <div class="guide-hero-badge">🛰️ Satellite World View & Complete Itinerary Engine</div>
+          <h1 class="page-title text-white" id="guideDestTitle">Destination Tour Guide</h1>
+          <p class="page-subtitle text-white" id="guideDestSub">Detailed breakdown of where we go, activities, hourly schedule, flight & photographer expenses</p>
+
+          <!-- Destination Selector Bar -->
+          <div class="guide-selector-strip">
+            <label for="tourGuideSelect" class="guide-select-label">Choose Destination:</label>
+            <select id="tourGuideSelect" class="styled-select guide-main-select"></select>
+          </div>
+
+          <!-- Quick Destination Chips -->
+          <div class="guide-quick-chips" id="guideQuickChips"></div>
+        </div>
+      </div>
+
+      <div class="section-container" style="margin-top:2rem">
+
+        <!-- SATELLITE FLIGHT PATH MAP SECTION -->
+        <div class="satellite-map-card">
+          <div class="satellite-map-header">
+            <div>
+              <div class="satellite-live-indicator"><span class="pulse-dot"></span> REAL SATELLITE WORLD FLIGHT ROUTE</div>
+              <h3 style="margin-top:0.3rem">🛰️ Orbit Satellite World View & Flight Trajectory</h3>
+              <p style="font-size:0.82rem;color:var(--text-secondary);margin:0">Direct flight route from India (DEL / BOM Hub) to your destination with high-resolution ESRI Earth imagery</p>
+            </div>
+            <button class="btn-small" onclick="navigateTo('map')" style="background:linear-gradient(135deg,#0284c7,#4f46e5);color:white">
+              Open Full Live Map →
+            </button>
+          </div>
+          <div id="guideSatelliteMap" class="guide-satellite-map-container"></div>
+        </div>
+
+        <!-- 5 SPECIFIC EXPENSES BREAKDOWN IN INDIAN RUPEES -->
+        <div class="guide-expense-master-card">
+          <div class="gemc-header">
+            <div>
+              <span class="badge-rupee">🇮🇳 INDIAN RUPEES (₹) ESTIMATE</span>
+              <h3 style="margin-top:0.3rem;font-size:1.4rem">💰 Exact Package Expense Breakdown</h3>
+              <p style="font-size:0.85rem;color:var(--text-secondary);margin:0">Every rupee accounted for: flights, luxury rooms, AC coach, gourmet food & personal photographer</p>
+            </div>
+            <button class="btn-primary" id="guideBookPackageBtn" style="background:linear-gradient(135deg,#059669,#0284c7);padding:0.65rem 1.4rem;font-size:0.95rem">
+              ⚡ Book Package via UPI
+            </button>
+          </div>
+
+          <div class="gemc-grid">
+            <div class="gemc-box">
+              <div class="gemc-icon">✈️</div>
+              <div class="gemc-meta">
+                <div class="gemc-title">Flight Ticket</div>
+                <div class="gemc-sub">Roundtrip from India</div>
+                <div class="gemc-cost" id="guideFlightCost">₹0</div>
+              </div>
+            </div>
+
+            <div class="gemc-box">
+              <div class="gemc-icon">🏨</div>
+              <div class="gemc-meta">
+                <div class="gemc-title">Room & Resort</div>
+                <div class="gemc-sub">Boutique 4-Star Stay</div>
+                <div class="gemc-cost" id="guideRoomCost">₹0</div>
+              </div>
+            </div>
+
+            <div class="gemc-box">
+              <div class="gemc-icon">🚌</div>
+              <div class="gemc-meta">
+                <div class="gemc-title">Bus & Transfers</div>
+                <div class="gemc-sub">AC Volvo / Private Van</div>
+                <div class="gemc-cost" id="guideBusCost">₹0</div>
+              </div>
+            </div>
+
+            <div class="gemc-box">
+              <div class="gemc-icon">🍽️</div>
+              <div class="gemc-meta">
+                <div class="gemc-title">Food & Dining</div>
+                <div class="gemc-sub">Breakfast & Local Feasts</div>
+                <div class="gemc-cost" id="guideFoodCost">₹0</div>
+              </div>
+            </div>
+
+            <div class="gemc-box gemc-box-highlight">
+              <div class="gemc-icon">📸</div>
+              <div class="gemc-meta">
+                <div class="gemc-title">Personal Photographer</div>
+                <div class="gemc-sub">DSLR Photoshoot + Drone Reels</div>
+                <div class="gemc-cost" id="guidePhotoCost">₹0</div>
+              </div>
+            </div>
+
+            <div class="gemc-box gemc-box-total">
+              <div class="gemc-icon">✨</div>
+              <div class="gemc-meta">
+                <div class="gemc-title">Total All-Inclusive Tour</div>
+                <div class="gemc-sub">All Taxes & Guided Fees Included</div>
+                <div class="gemc-cost gemc-total-cost" id="guideTotalPackage">₹0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 CORE GUIDE SECTIONS: ENGA PORA, ENNA PANDRAM, ENNA SCHEDULE -->
+        <div class="guide-sections-grid">
+          
+          <!-- SECTION 1: ENGA PORA (WHERE WE GO) -->
+          <div class="guide-column-card">
+            <div class="gcc-header">
+              <span class="gcc-badge">📍 DESTINATION STOPS</span>
+              <h3 class="gcc-title">Enga Pora (Where We Go)</h3>
+              <p class="gcc-sub">Key sights, historical monuments, beaches & secret viewpoints visited on this tour</p>
+            </div>
+            <div class="guide-spots-container" id="guideWhereWeGoList"></div>
+          </div>
+
+          <!-- SECTION 2: ENNA PANDRAM (WHAT WE DO) -->
+          <div class="guide-column-card">
+            <div class="gcc-header">
+              <span class="gcc-badge">🎯 ACTIVITIES & MEMORIES</span>
+              <h3 class="gcc-title">Enna Pandram (What We Do)</h3>
+              <p class="gcc-sub">Adventures, dedicated photo sessions, cultural rituals & culinary experiences</p>
+            </div>
+            <div class="guide-activities-container" id="guideWhatWeDoList"></div>
+          </div>
+
+        </div>
+
+        <!-- SECTION 3: ENNA SCHEDULE (DAY-WISE TIMETABLE) -->
+        <div class="guide-schedule-card">
+          <div class="gsc-header">
+            <div>
+              <span class="gcc-badge">⏱️ DAY-BY-DAY TIMETABLE</span>
+              <h3 class="gcc-title" style="margin-top:0.3rem">Enna Schedule (Complete Tour Timetable)</h3>
+              <p class="gcc-sub">Proper hourly schedule from sunrise to sunset so you never miss a moment</p>
+            </div>
+          </div>
+          <div id="guideScheduleTimeline" class="guide-timeline-wrapper"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== EXPLORE PAGE ===== -->
+    <section class="page" id="page-explore">
+      <div class="section-container">
+        <div class="explore-header">
+          <h1 class="page-title">🌏 Explore 30 Real World Destinations</h1>
+          <p class="page-subtitle">Real verified places, transparent pricing in Indian Rupees (₹), and dedicated tour guide schedules</p>
+          <div class="explore-filters">
+            <button class="filter-btn active" data-filter="all">All (30)</button>
+            <button class="filter-btn" data-filter="beach">🏖️ Beach</button>
+            <button class="filter-btn" data-filter="mountain">⛰️ Mountain</button>
+            <button class="filter-btn" data-filter="city">🏙️ City</button>
+            <button class="filter-btn" data-filter="cultural">🏛️ Cultural</button>
+            <button class="filter-btn" data-filter="adventure">🧗 Adventure</button>
+            <button class="filter-btn" data-filter="nature">🌿 Nature</button>
+          </div>
+          <div class="search-bar-explore">
+            <input type="text" id="exploreSearch" placeholder="Search by destination name, country or tags (e.g. Dubai, Manali, Ooty, Santorini, Paris, Kyoto)..." class="explore-search-input" />
+          </div>
+        </div>
+        <div class="explore-grid" id="exploreGrid"></div>
+      </div>
+    </section>
+
+    <!-- ===== MY TRIPS PAGE ===== -->
+    <section class="page" id="page-trips">
+      <div class="section-container">
+        <div class="trips-header">
+          <div>
+            <h1 class="page-title">✈️ My Trips</h1>
+            <p class="page-subtitle" style="margin-bottom:0">Manage and track your itineraries and budgets in ₹</p>
+          </div>
+          <button class="btn-primary" id="addTripBtn">+ New Trip</button>
+        </div>
+        <div class="trips-tabs">
+          <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
+          <button class="tab-btn" data-tab="ongoing">Ongoing</button>
+          <button class="tab-btn" data-tab="completed">Completed</button>
+        </div>
+        <div id="tripsContainer" class="trips-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== ITINERARY PAGE ===== -->
+    <section class="page" id="page-itinerary">
+      <div class="section-container">
+        <div class="itinerary-header">
+          <div>
+            <h1 class="page-title">🗓️ Trip Itinerary</h1>
+            <p class="page-subtitle" style="margin-bottom:0">Daily activities, time slots, photography sessions, and reservations</p>
+          </div>
+          <div class="itinerary-controls">
+            <select id="itineraryTripSelect" class="styled-select">
+              <option value="">Select a Trip...</option>
+            </select>
+            <button class="btn-primary" id="addActivityBtn">+ Add Activity</button>
+          </div>
+        </div>
+        <div id="itineraryContent" class="itinerary-timeline"></div>
+      </div>
+    </section>
+
+    <!-- ===== BUDGET PAGE ===== -->
+    <section class="page" id="page-budget">
+      <div class="section-container">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+          <div>
+            <h1 class="page-title">💰 Budget & Expense Tracker</h1>
+            <p class="page-subtitle" style="margin-bottom:0">Keep every rupee under control with Indian Rupee (₹) tracking</p>
+          </div>
+          <button class="btn-primary" id="budgetTopUpBtn" style="background:linear-gradient(135deg,#059669,#0284c7)">
+            <span>⚡ Add Money via UPI</span>
+          </button>
+        </div>
+
+        <div class="budget-overview">
+          <div class="budget-card total-budget">
+            <div class="budget-label">Total Allocated Budget (₹)</div>
+            <div class="budget-amount" id="totalBudgetDisplay">₹0</div>
+            <div class="budget-bar-container">
+              <div class="budget-bar" id="budgetBar" style="width:0%"></div>
+            </div>
+            <div class="budget-sub" id="budgetSubText">₹0 spent · ₹0 remaining</div>
+          </div>
+          <div class="budget-breakdown">
+            <canvas id="budgetChart" width="260" height="260"></canvas>
+          </div>
+        </div>
+
+        <div class="expenses-header">
+          <h2 class="section-title">📋 Trip Expenses (Flight, Stay, Bus, Food, Photo)</h2>
+          <div class="expense-controls">
+            <select id="budgetTripSelect" class="styled-select">
+              <option value="">All Trips</option>
+            </select>
+            <button class="btn-primary" id="addExpenseBtn">+ Add Expense</button>
+          </div>
+        </div>
+        <div id="expensesList" class="expenses-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== LIVE MAP PAGE (SATELLITE WORLD VIEW) ===== -->
+    <section class="page" id="page-map">
+      <div class="map-page">
+        <div class="map-sidebar">
+          <h2 class="map-sidebar-title">🗺️ World Explorer (30 Destinations)</h2>
+          
+          <!-- Layer Switcher -->
+          <div class="map-layer-selector">
+            <button class="map-layer-btn active" data-mode="satellite" onclick="setMapMode('satellite')">🛰️ Satellite World View</button>
+            <button class="map-layer-btn" data-mode="street" onclick="setMapMode('street')">🗺️ Street Map</button>
+            <button class="map-layer-btn" data-mode="night" onclick="setMapMode('night')">🌙 Dark Map</button>
+          </div>
+
+          <div class="map-search">
+            <input type="text" id="mapSearch" placeholder="Search location (e.g. Dubai, Paris, Manali)..." class="map-search-input" />
+            <button id="mapSearchBtn" class="map-search-btn">Search</button>
+          </div>
+          <div class="map-places-list" id="mapPlacesList"></div>
+        </div>
+        <div class="map-wrapper">
+          <div id="mainMap" class="main-map"></div>
+          <div class="map-info-panel" id="mapInfoPanel">
+            <div class="map-info-close" id="mapInfoClose">✕</div>
+            <div id="mapInfoContent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ADMIN PORTAL PAGE (STRICTLY RESTRICTED TO PROJECT CREATOR) ===== -->
+    <section class="page" id="page-admin">
+      <div class="section-container">
+        <div class="admin-header">
+          <div>
+            <div class="admin-badge">👑 Verified Project Creator Administration</div>
+            <h1 class="page-title">Life Journey Admin Portal</h1>
+            <p class="page-subtitle">Restricted Master Control: Manage 30 destinations, oversee UPI payments, view traveler bookings, and moderate reviews</p>
+          </div>
+          <div class="admin-actions-bar">
+            <button class="btn-primary" id="adminAddDestBtn">+ Add Destination</button>
+            <button class="btn-primary" id="adminSimulateTxnBtn" style="background:linear-gradient(135deg,#059669,#0284c7)">+ Simulate UPI Payment</button>
+          </div>
+        </div>
+
+        <!-- Admin KPI Metrics -->
+        <div class="admin-metrics-grid">
+          <div class="admin-metric-card">
+            <div class="am-icon">💰</div>
+            <div class="am-info">
+              <div class="am-val" id="adminTotalGross">₹12,50,000</div>
+              <div class="am-label">Total UPI Volume</div>
+            </div>
+          </div>
+          <div class="admin-metric-card">
+            <div class="am-icon">✈️</div>
+            <div class="am-info">
+              <div class="am-val" id="adminTotalTrips">0</div>
+              <div class="am-label">Active Bookings</div>
+            </div>
+          </div>
+          <div class="admin-metric-card">
+            <div class="am-icon">📍</div>
+            <div class="am-info">
+              <div class="am-val" id="adminTotalPlaces">30</div>
+              <div class="am-label">Live Destinations</div>
+            </div>
+          </div>
+          <div class="admin-metric-card">
+            <div class="am-icon">⭐</div>
+            <div class="am-info">
+              <div class="am-val" id="adminTotalReviews">6</div>
+              <div class="am-label">Verified Reviews</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+          <button class="admin-tab-btn active" data-admintab="destinations">📍 Manage Destinations</button>
+          <button class="admin-tab-btn" data-admintab="bookings">✈️ User Bookings & Trips</button>
+          <button class="admin-tab-btn" data-admintab="payments">💳 Live UPI Transactions</button>
+          <button class="admin-tab-btn" data-admintab="reviews">🌟 Customer Reviews</button>
+        </div>
+
+        <!-- Admin Content Panels -->
+        <div id="adminTabContent">
+          <!-- Destinations Tab -->
+          <div class="admin-panel active" id="adminPanel-destinations">
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Destination</th>
+                    <th>Country / Continent</th>
+                    <th>Average Cost (₹)</th>
+                    <th>Rating</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminDestTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bookings Tab -->
+          <div class="admin-panel" id="adminPanel-bookings">
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Trip Name</th>
+                    <th>Destination</th>
+                    <th>Dates</th>
+                    <th>Budget (₹)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBookingsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- UPI Payments Tab -->
+          <div class="admin-panel" id="adminPanel-payments">
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Txn ID</th>
+                    <th>Method</th>
+                    <th>Amount (₹)</th>
+                    <th>Description</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="adminPaymentsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Reviews Moderation Tab -->
+          <div class="admin-panel" id="adminPanel-reviews">
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Traveler</th>
+                    <th>Destination</th>
+                    <th>Rating</th>
+                    <th>Review Comment</th>
+                    <th>Payment Method</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminReviewsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="nav-brand" style="margin-bottom:0.75rem">
+            <span class="brand-icon">✈️</span>
+            <span class="brand-name">Life Journey</span>
+          </div>
+          <p class="footer-text">The premier smart travel platform featuring 30 world destinations, comprehensive tour guides (where we go, what we do, schedules), transparent flight, stay, bus, food & photographer expenses, and instant UPI payments.</p>
+          <div class="footer-badges">
+            <span class="secure-badge">🔒 256-bit Encrypted</span>
+            <span class="secure-badge">🇮🇳 NPCI UPI Compliant</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-title">Explore & Guide</h4>
+          <ul class="footer-links">
+            <li><a href="#" onclick="navigateTo('explore')">All 30 Destinations</a></li>
+            <li><a href="#" onclick="navigateTo('guide')">Tour Guide & Timetables</a></li>
+            <li><a href="#" onclick="navigateTo('map')">Satellite World Map</a></li>
+            <li><a href="#" onclick="navigateTo('budget')">Rupee Budget Calculator</a></li>
+            <li><a href="#" onclick="openModal('addReviewModal')">Write a Review</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-title">Connect with Creator</h4>
+          <div class="footer-creator-box">
+            <div style="font-weight:700;color:var(--text-primary);margin-bottom:0.25rem">Yusuf — Project Creator</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.75rem">Travel Architect & Founder of Life Journey</div>
+            <div class="social-links-footer">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-btn instagram" title="Instagram: @lifejourney.travels">
+                <span class="social-icon">📸</span>
+                <span>Instagram</span>
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-btn facebook" title="Facebook: Life Journey Travels">
+                <span class="social-icon">📘</span>
+                <span>Facebook</span>
+              </a>
+              <a href="https://wa.me/919876543210?text=Hi%20Life%20Journey!%20I%20want%20to%20plan%20a%20tour." target="_blank" rel="noopener noreferrer" class="social-btn whatsapp" title="Chat on WhatsApp: +91 98765 43210">
+                <span class="social-icon">💬</span>
+                <span>WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-title">Account & Security</h4>
+          <ul class="footer-links">
+            <li><a href="#" onclick="openModal('profileModal')">My Profile & Wallet</a></li>
+            <li><a href="#" onclick="openUPIModal(5000, 'Wallet Top-up')">Recharge via UPI / GPay</a></li>
+            <li><a href="#" onclick="openModal('authModal')">Sign In / Sign Up</a></li>
+            <li><a href="#" onclick="openModal('creatorAuthModal')">👑 Creator Admin Gate</a></li>
+            <li><a href="#" onclick="openModal('termsModal')">Terms & Refund Rules</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2026 Life Journey Travel Technologies Pvt Ltd. All rights reserved. Prices in Indian Rupees (₹).</div>
+        <div class="footer-legal-links">
+          <a href="#" onclick="openModal('aboutModal')">About Creator</a> · 
+          <a href="#" onclick="openModal('privacyModal')">Privacy Policy</a> · 
+          <a href="#" onclick="openModal('termsModal')">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== MODALS ===================== -->
+
+  <!-- 1. Authentication / Sign In & Sign Up Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="authModalTitle">👤 Traveler Sign In</h3>
+        <button class="modal-close" data-modal="authModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthMode('login')">Sign In</button>
+          <button class="auth-tab-btn" id="authTabRegister" onclick="switchAuthMode('register')">Sign Up (Free)</button>
+          <button class="auth-tab-btn" id="authTabCreator" onclick="switchAuthMode('creator')">👑 Creator Login</button>
+        </div>
+
+        <form id="authForm" onsubmit="handleAuthSubmit(event)">
+          <div class="form-group" id="authNameGroup" style="display:none">
+            <label>Full Name</label>
+            <input type="text" id="authName" placeholder="e.g. Yusuf Raja" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="authEmail" placeholder="yourname@gmail.com" class="form-input" required />
+          </div>
+
+          <div class="form-group" id="authPassGroup">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="••••••••" class="form-input" required />
+          </div>
+
+          <div class="form-group" id="authCreatorKeyGroup" style="display:none">
+            <label>Project Creator Master Key</label>
+            <input type="password" id="authCreatorKey" placeholder="Enter master passcode (e.g. creator2026)" class="form-input" />
+            <small style="color:var(--text-secondary);font-size:0.75rem">Strictly for the administrator and creator of this project.</small>
+          </div>
+
+          <div class="auth-terms-note">
+            By signing in or registering, you agree to Life Journey's 
+            <a href="#" onclick="openModal('termsModal'); return false;" style="color:var(--accent-primary);text-decoration:underline">Terms of Service</a>.
+          </div>
+
+          <button type="submit" class="btn-primary btn-full" id="authSubmitBtn" style="margin-top:1rem">Sign In to Life Journey →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Creator Admin Gate Modal (Strict Passcode Verification) -->
+  <div class="modal-overlay" id="creatorAuthModal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin-bottom:0.2rem">🔒 Project Creator Verification</h3>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0">Admin Portal is strictly restricted to the project creator</p>
+        </div>
+        <button class="modal-close" data-modal="creatorAuthModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align:center;padding:1rem 0 1.5rem">
+          <div style="font-size:3rem;margin-bottom:0.5rem">👑</div>
+          <div style="font-weight:800;font-size:1.1rem;color:var(--text-primary)">Creator Master Passcode Required</div>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin:0.4rem 0 1.25rem">Only the verified administrator and project creator (Yusuf) has authorization to manage destinations, financial records, and traveler bookings.</p>
+          
+          <form onsubmit="verifyCreatorFromModal(event)">
+            <div class="form-group" style="text-align:left">
+              <label>Enter Creator Passcode / Master Key</label>
+              <input type="password" id="creatorModalPasscode" placeholder="Enter master key (e.g. creator2026)" class="form-input" style="font-size:1.1rem;font-weight:700" required />
+            </div>
+            <button type="submit" class="btn-primary btn-full" id="verifyCreatorBtn">
+              Unlock Creator Admin Portal ⚡
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. About Creator & Social Media Modal (Instagram, Facebook, WhatsApp) -->
+  <div class="modal-overlay" id="aboutModal">
+    <div class="modal modal-large" style="max-width:620px">
+      <div class="modal-header">
+        <h3>📸 About Project Creator — Life Journey</h3>
+        <button class="modal-close" data-modal="aboutModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="about-creator-card">
+          <div class="about-creator-header">
+            <div class="about-creator-avatar">YU</div>
+            <div>
+              <div class="about-creator-name">Yusuf</div>
+              <div class="about-creator-title">Founder & Travel Architect · Life Journey</div>
+              <span class="about-verified-badge">👑 Project Creator & Admin</span>
+            </div>
+          </div>
+
+          <p class="about-creator-bio">
+            "I built <strong>Life Journey</strong> to give travelers complete transparency. Unlike generic travel sites, Life Journey breaks down every single cost in Indian Rupees (₹) — flight tickets, hotel rooms, bus coaches, multi-cuisine food, and dedicated personal travel photographers — paired with day-by-day timetables and real satellite world views."
+          </p>
+
+          <div style="margin:1.5rem 0 0.5rem">
+            <div style="font-size:0.85rem;font-weight:800;color:var(--text-primary);margin-bottom:0.75rem;text-transform:uppercase">
+              Connect Directly with Creator on Social Media:
+            </div>
+
+            <div class="social-buttons-grid">
+              <!-- Instagram -->
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-card-btn instagram">
+                <div class="scb-icon">📸</div>
+                <div class="scb-info">
+                  <div class="scb-name">Instagram</div>
+                  <div class="scb-handle">@lifejourney.travels</div>
+                  <div class="scb-action">Follow on Instagram →</div>
+                </div>
+              </a>
+
+              <!-- Facebook -->
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-card-btn facebook">
+                <div class="scb-icon">📘</div>
+                <div class="scb-info">
+                  <div class="scb-name">Facebook</div>
+                  <div class="scb-handle">facebook.com/lifejourney.travels</div>
+                  <div class="scb-action">Like & Follow Page →</div>
+                </div>
+              </a>
+
+              <!-- WhatsApp -->
+              <a href="https://wa.me/919876543210?text=Hello%20Yusuf!%20I%20visited%20Life%20Journey%20and%20want%20to%20plan%20a%20tour." target="_blank" rel="noopener noreferrer" class="social-card-btn whatsapp">
+                <div class="scb-icon">💬</div>
+                <div class="scb-info">
+                  <div class="scb-name">WhatsApp Direct</div>
+                  <div class="scb-handle">+91 98765 43210</div>
+                  <div class="scb-action">Chat on WhatsApp (Online) →</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div style="margin-top:1.25rem;text-align:center">
+            <button class="btn-primary" onclick="closeModal('aboutModal'); navigateTo('guide');" style="background:linear-gradient(135deg,#059669,#0284c7)">
+              🧭 Explore Tour Guides for 30 Places
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. User Profile & Wallet Modal -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>👤 Traveler Profile & Travel Wallet</h3>
+        <button class="modal-close" data-modal="profileModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="profile-card">
+          <div class="profile-header-wrap">
+            <div class="profile-big-avatar" id="profileAvatarText">YU</div>
+            <div class="profile-info-wrap">
+              <div class="profile-name" id="profileNameText">Yusuf</div>
+              <div class="profile-email" id="profileEmailText">traveler@lifejourney.com</div>
+              <span class="profile-role-badge" id="profileRoleBadge">Verified Traveler</span>
+            </div>
+          </div>
+
+          <!-- Travel Wallet Card -->
+          <div class="wallet-balance-box">
+            <div class="wbb-header">
+              <div>
+                <div class="wbb-label">Active Travel Wallet Balance (INR)</div>
+                <div class="wbb-amount" id="profileWalletAmount">₹50,000</div>
+              </div>
+              <button class="btn-primary" onclick="openUPIModal(5000, 'Wallet Top-up'); closeModal('profileModal');" style="padding:0.5rem 1rem;font-size:0.85rem">
+                + Add Money
+              </button>
+            </div>
+            <div class="wbb-supported">
+              <span>Supported Instant Payments:</span>
+              <span class="upi-chip">GPay</span>
+              <span class="upi-chip">PhonePe</span>
+              <span class="upi-chip">Paytm</span>
+              <span class="upi-chip">BHIM QR</span>
+            </div>
+          </div>
+
+          <!-- Recent Wallet Transactions -->
+          <div style="margin-top:1.5rem">
+            <div style="font-size:0.9rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-primary)">Recent Wallet Activity</div>
+            <div class="profile-txns-list" id="profileTxnsList"></div>
+          </div>
+
+          <!-- Profile Actions -->
+          <div class="profile-actions-strip">
+            <button class="btn-primary" id="profileAdminBtn" onclick="navigateTo('admin'); closeModal('profileModal');" style="display:none;background:linear-gradient(135deg,#4f46e5,#0284c7)">
+              ⚡ Open Creator Admin Portal
+            </button>
+            <button class="btn-small danger" onclick="logoutUser(); closeModal('profileModal');" style="padding:0.7rem;font-size:0.9rem;font-weight:700">
+              🚪 Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Real-Time UPI & GPay / PhonePe Payment Modal -->
+  <div class="modal-overlay" id="upiPaymentModal">
+    <div class="modal" style="max-width:520px">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin-bottom:0.2rem">⚡ Real-Time UPI Payment Gateway</h3>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0">Official NPCI UPI Simulator · Instant INR (₹) Processing</p>
+        </div>
+        <button class="modal-close" data-modal="upiPaymentModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Amount Selection -->
+        <div class="form-group">
+          <label>Select or Enter Amount in Rupees (₹)</label>
+          <div class="upi-amount-presets">
+            <button class="upi-preset-btn" onclick="selectUpiAmount(1000)">₹1,000</button>
+            <button class="upi-preset-btn active" onclick="selectUpiAmount(5000)">₹5,000</button>
+            <button class="upi-preset-btn" onclick="selectUpiAmount(10000)">₹10,000</button>
+            <button class="upi-preset-btn" onclick="selectUpiAmount(25000)">₹25,000</button>
+          </div>
+          <input type="number" id="upiCustomAmount" value="5000" class="form-input" style="font-size:1.25rem;font-weight:800;font-family:var(--font-display)" />
+        </div>
+
+        <!-- Payment Methods Tabs -->
+        <div class="upi-methods-grid">
+          <div class="upi-method-card active" id="methodGPay" onclick="switchUpiMethod('gpay')">
+            <div class="upi-icon">📱</div>
+            <div class="upi-name">Google Pay</div>
+            <div class="upi-sub">Instant GPay App</div>
+          </div>
+          <div class="upi-method-card" id="methodPhonePe" onclick="switchUpiMethod('phonepe')">
+            <div class="upi-icon">🟣</div>
+            <div class="upi-name">PhonePe</div>
+            <div class="upi-sub">Instant UPI</div>
+          </div>
+          <div class="upi-method-card" id="methodQR" onclick="switchUpiMethod('qr')">
+            <div class="upi-icon">📷</div>
+            <div class="upi-name">Scan QR Code</div>
+            <div class="upi-sub">Any UPI App</div>
+          </div>
+          <div class="upi-method-card" id="methodVPA" onclick="switchUpiMethod('vpa')">
+            <div class="upi-icon">🆔</div>
+            <div class="upi-name">UPI ID / VPA</div>
+            <div class="upi-sub">user@bank</div>
+          </div>
+        </div>
+
+        <!-- Dynamic Payment Method Content -->
+        <div id="upiMethodContent">
+          <!-- GPay Content -->
+          <div id="contentGPay" class="upi-detail-box">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+              <span style="font-size:1.8rem">📱</span>
+              <div>
+                <div style="font-weight:800;font-size:1rem;color:var(--text-primary)">Pay with Google Pay (GPay)</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary)">Link to your GPay UPI handle and authorize</div>
+              </div>
+            </div>
+            <input type="text" id="gpayIdInput" value="traveler@okhdfcbank" class="form-input" placeholder="yourname@okhdfcbank" />
+          </div>
+
+          <!-- PhonePe Content -->
+          <div id="contentPhonePe" class="upi-detail-box" style="display:none">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+              <span style="font-size:1.8rem">🟣</span>
+              <div>
+                <div style="font-weight:800;font-size:1rem;color:var(--text-primary)">Pay with PhonePe UPI</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary)">Fast approval via PhonePe notification</div>
+              </div>
+            </div>
+            <input type="text" id="phonepeIdInput" value="traveler@ybl" class="form-input" placeholder="mobilenumber@ybl" />
+          </div>
+
+          <!-- QR Code Content -->
+          <div id="contentQR" class="upi-detail-box" style="display:none;text-align:center">
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text-secondary);margin-bottom:0.75rem">SCAN WITH ANY UPI APP (GPAY / PHONEPE / PAYTM)</div>
+            <div class="qr-code-box">
+              <div class="qr-code-art">
+                <div class="qr-scanner-line"></div>
+                <svg width="180" height="180" viewBox="0 0 100 100">
+                  <rect width="100" height="100" fill="#ffffff" rx="8"/>
+                  <rect x="8" y="8" width="28" height="28" fill="#0f172a" rx="4"/>
+                  <rect x="14" y="14" width="16" height="16" fill="#ffffff"/>
+                  <rect x="18" y="18" width="8" height="8" fill="#4f46e5"/>
+                  <rect x="64" y="8" width="28" height="28" fill="#0f172a" rx="4"/>
+                  <rect x="70" y="14" width="16" height="16" fill="#ffffff"/>
+                  <rect x="74" y="18" width="8" height="8" fill="#4f46e5"/>
+                  <rect x="8" y="64" width="28" height="28" fill="#0f172a" rx="4"/>
+                  <rect x="14" y="70" width="16" height="16" fill="#ffffff"/>
+                  <rect x="18" y="74" width="8" height="8" fill="#4f46e5"/>
+                  <circle cx="50" cy="50" r="10" fill="#0284c7"/>
+                  <rect x="42" y="14" width="16" height="6" fill="#0f172a"/>
+                  <rect x="42" y="24" width="6" height="12" fill="#0f172a"/>
+                  <rect x="52" y="24" width="6" height="18" fill="#0f172a"/>
+                  <rect x="64" y="44" width="12" height="12" fill="#0f172a"/>
+                  <rect x="80" y="44" width="12" height="6" fill="#0f172a"/>
+                  <rect x="44" y="66" width="14" height="8" fill="#0f172a"/>
+                  <rect x="64" y="66" width="16" height="12" fill="#0f172a"/>
+                  <rect x="84" y="66" width="8" height="26" fill="#0f172a"/>
+                </svg>
+              </div>
+            </div>
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text-primary);margin-top:0.6rem">UPI ID: lifejourney@icici</div>
+            <div style="font-size:0.75rem;color:var(--text-secondary)">Expires in: <span id="qrTimerText" style="font-weight:700;color:#ea580c">04:59</span></div>
+          </div>
+
+          <!-- VPA Content -->
+          <div id="contentVPA" class="upi-detail-box" style="display:none">
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text-secondary);margin-bottom:0.5rem">ENTER YOUR VIRTUAL PAYMENT ADDRESS (UPI ID)</div>
+            <input type="text" id="vpaIdInput" value="traveler@paytm" class="form-input" placeholder="username@bank / mobile@upi" />
+          </div>
+        </div>
+
+        <!-- Processing Indicator -->
+        <div id="upiProcessingIndicator" style="display:none;text-align:center;padding:1.5rem 0">
+          <div class="upi-spinner"></div>
+          <div style="font-weight:800;font-size:1.1rem;margin-top:0.75rem;color:var(--text-primary)" id="upiProgressTitle">Processing Payment...</div>
+          <div style="font-size:0.85rem;color:var(--text-secondary)" id="upiProgressSub">Communicating securely with NPCI UPI switch</div>
+        </div>
+
+        <button class="btn-primary btn-full" id="upiPayNowBtn" onclick="executeUPIPayment()" style="margin-top:1.25rem">
+          🔒 Authorize & Pay Securely in ₹
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Customer Review Modal -->
+  <div class="modal-overlay" id="addReviewModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>✍️ Share Your Travel Review</h3>
+        <button class="modal-close" data-modal="addReviewModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="reviewForm" onsubmit="handleReviewSubmit(event)">
+          <div class="form-group">
+            <label>Select Destination</label>
+            <select id="reviewDestSelect" class="form-input" required></select>
+          </div>
+
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="reviewAuthorName" placeholder="e.g. Ananya Sen" class="form-input" required />
+          </div>
+
+          <div class="form-group">
+            <label>Rating (Click stars)</label>
+            <div class="star-rating-selector" id="starRatingSelector">
+              <span class="star-pick active" data-rating="1">★</span>
+              <span class="star-pick active" data-rating="2">★</span>
+              <span class="star-pick active" data-rating="3">★</span>
+              <span class="star-pick active" data-rating="4">★</span>
+              <span class="star-pick active" data-rating="5">★</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Method Used</label>
+            <select id="reviewPaymentMethod" class="form-input">
+              <option value="GPay UPI">Google Pay (GPay UPI)</option>
+              <option value="PhonePe UPI">PhonePe UPI</option>
+              <option value="Paytm UPI">Paytm UPI</option>
+              <option value="Wallet Balance">Life Journey Wallet (INR)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Your Review & Experience</label>
+            <textarea id="reviewComment" placeholder="Tell other travelers about your experience, photography sessions, food, hotels, sightseeing, and budgeting..." class="form-textarea" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary btn-full">Post Verified Review ⭐</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Admin Add Destination Modal -->
+  <div class="modal-overlay" id="adminAddDestModal">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3>📍 Admin — Add Real World Destination</h3>
+        <button class="modal-close" data-modal="adminAddDestModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="adminDestForm" onsubmit="handleAdminAddDest(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Destination Name</label>
+              <input type="text" id="admDestName" placeholder="e.g. Venice" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label>Country</label>
+              <input type="text" id="admDestCountry" placeholder="e.g. Italy" class="form-input" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Continent</label>
+              <select id="admDestContinent" class="form-input">
+                <option value="Europe">Europe</option>
+                <option value="Asia">Asia</option>
+                <option value="Americas">Americas</option>
+                <option value="Africa">Africa</option>
+                <option value="Oceania">Oceania</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Daily Budget (₹)</label>
+              <input type="text" id="admDestCost" placeholder="e.g. ₹18,500/day" class="form-input" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>High-Resolution Photo URL</label>
+            <input type="url" id="admDestImg" placeholder="https://images.unsplash.com/..." class="form-input" required />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="admDestDesc" placeholder="Describe the destination experience, attractions, schedule..." class="form-textarea" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary btn-full">Save Destination to System 🌍</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Destination Detail Modal (With 5 Cost Breakdowns) -->
+  <div class="modal-overlay" id="destinationModal">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3 id="destModalTitle">Destination</h3>
+        <button class="modal-close" data-modal="destinationModal">✕</button>
+      </div>
+      <div class="modal-body" id="destModalBody"></div>
+    </div>
+  </div>
+
+  <!-- 9. Plan New Trip Modal -->
+  <div class="modal-overlay" id="addTripModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🌍 Plan New Trip</h3>
+        <button class="modal-close" data-modal="addTripModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Trip Name</label>
+          <input type="text" id="tripName" placeholder="e.g. Dubai Adventure 2026" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>Destination</label>
+          <input type="text" id="tripDestination" placeholder="e.g. Dubai, UAE" class="form-input" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="tripStartDate" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" id="tripEndDate" class="form-input" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Total Budget in Indian Rupees (₹)</label>
+          <input type="number" id="tripBudget" placeholder="e.g. 150000" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>Trip Type</label>
+          <select id="tripType" class="form-input">
+            <option value="leisure">🏖️ Leisure</option>
+            <option value="adventure">🧗 Adventure</option>
+            <option value="business">💼 Business</option>
+            <option value="cultural">🏛️ Cultural</option>
+            <option value="family">👨‍👩‍👧 Family</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notes & Photography Preferences</label>
+          <textarea id="tripNotes" placeholder="Drone photography, dietary choices, special reminders..." class="form-textarea"></textarea>
+        </div>
+        <button class="btn-primary btn-full" id="saveTripBtn">Create Trip ✈️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Add Activity Modal -->
+  <div class="modal-overlay" id="addActivityModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📅 Add Activity to Schedule</h3>
+        <button class="modal-close" data-modal="addActivityModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Activity Name</label>
+          <input type="text" id="activityName" placeholder="e.g. Golden Hour Drone Photoshoot" class="form-input" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="activityDate" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="time" id="activityTime" class="form-input" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="activityCategory" class="form-input">
+            <option value="sightseeing">🏛️ Sightseeing</option>
+            <option value="food">🍽️ Food & Dining</option>
+            <option value="transport">✈️ Transport</option>
+            <option value="accommodation">🏨 Accommodation</option>
+            <option value="adventure">🎢 Adventure</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="entertainment">🎭 Entertainment</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="activityLocation" placeholder="e.g. Oia Castle, Santorini" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="activityNotes" placeholder="Details, camera gear, timing reminders..." class="form-textarea"></textarea>
+        </div>
+        <button class="btn-primary btn-full" id="saveActivityBtn">Add to Schedule 📅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Add Expense Modal -->
+  <div class="modal-overlay" id="addExpenseModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>💸 Add Expense in Rupees (₹)</h3>
+        <button class="modal-close" data-modal="addExpenseModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="expenseDesc" placeholder="e.g. Flight ticket / Hotel room / Photographer fee" class="form-input" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount in Rupees (₹)</label>
+            <input type="number" id="expenseAmount" placeholder="e.g. 12500" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="expenseDate" class="form-input" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="expenseCategory" class="form-input">
+            <option value="transport">✈️ Transport / Flight</option>
+            <option value="accommodation">🏨 Accommodation / Room</option>
+            <option value="food">🍽️ Food & Dining</option>
+            <option value="sightseeing">📸 Photographer / Activities</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Assign to Trip</label>
+          <select id="expenseTripSelect" class="form-input">
+            <option value="">Select Trip...</option>
+          </select>
+        </div>
+        <button class="btn-primary btn-full" id="saveExpenseBtn">Save Expense (₹) 💰</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Terms & Privacy Modals -->
+  <div class="modal-overlay" id="termsModal">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3>📜 Terms of Service & Booking Conditions</h3>
+        <button class="modal-close" data-modal="termsModal">✕</button>
+      </div>
+      <div class="modal-body legal-modal-body">
+        <div class="legal-badge">Version 4.0 · Life Journey Platform</div>
+        <h4>1. Transparent Rupee (₹) Pricing</h4>
+        <p>All tour packages, flight estimates, hotel stays, bus transfers, food allocations, and photographer fees are displayed in Indian Rupees (INR - ₹).</p>
+        <h4>2. Dedicated Photographer Sessions</h4>
+        <p>Photographers provided through Life Journey are certified professionals with high-resolution mirrorless / DSLR equipment and licensed drone operators where permitted by local law.</p>
+        <h4>3. Wallet & UPI Payments</h4>
+        <p>Transactions completed via Google Pay, PhonePe, and BHIM QR are processed through secure NPCI gateways with instant receipt issuance.</p>
+        <button class="btn-primary" onclick="closeModal('termsModal')" style="margin-top:1.5rem">Accept Terms of Service</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="privacyModal">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3>🔒 Privacy Policy & Data Protection</h3>
+        <button class="modal-close" data-modal="privacyModal">✕</button>
+      </div>
+      <div class="modal-body legal-modal-body">
+        <div class="legal-badge">Effective Date: October 2026 · Life Journey</div>
+        <h4>1. Information We Collect</h4>
+        <p>Life Journey collects minimal personal data required to plan your travel, including name, email, saved itineraries, and wallet balance. We never sell your personal information or location coordinates.</p>
+        <h4>2. UPI Financial Security</h4>
+        <p>We do not store bank account passwords, UPI PINs, or debit card numbers on our servers. All UPI transactions adhere strictly to RBI and NPCI guidelines.</p>
+        <button class="btn-primary" onclick="closeModal('privacyModal')" style="margin-top:1.5rem">I Understand & Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/theme.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/weather.js"></script>
+</body>
+</html>
