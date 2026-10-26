@@ -2,10 +2,13 @@
 
 > **Explore 30 Real World Destinations, Transparent Expense Breakdowns (₹), Day-by-Day Tour Guide Timetables, and Satellite World View.**
 
-## 🌐 Live Demo
-👉 **Live Website**: [https://travel-project-z9lw.onrender.com](https://travel-project-z9lw.onrender.com)
+## 🌐 Live Demo & Deployment
+- 🚀 **Primary Live Website (GitHub Pages - Instant & 24/7)**: [https://mohammedyusuf-a.github.io/Travel-Project/](https://mohammedyusuf-a.github.io/Travel-Project/)
+- 🌐 **Alternative Live URL (Render)**: [https://travel-project-z9lw.onrender.com](https://travel-project-z9lw.onrender.com)
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-https%3A%2F%2Ftravel--project--z9lw.onrender.com-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://travel-project-z9lw.onrender.com)
+[![GitHub Pages](https://img.shields.io/badge/Live%20Website-GitHub%20Pages-22c55e?style=for-the-badge&logo=github&logoColor=white)](https://mohammedyusuf-a.github.io/Travel-Project/)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmohammedyusuf-a%2FTravel-Project)
+[![Render Live](https://img.shields.io/badge/Backup%20Live-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://travel-project-z9lw.onrender.com)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mohammedyusuf-a/Travel-Project)
 
 ![Life Journey Banner](https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1400&q=80)

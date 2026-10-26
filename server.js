@@ -31,6 +31,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Live Render URL: https://travel-project-z9lw.onrender.com`);
+  console.log(`Server running locally at: http://localhost:${PORT}`);
+  console.log(`GitHub Pages (24/7): https://mohammedyusuf-a.github.io/Travel-Project/`);
+  console.log(`Render URL: https://travel-project-z9lw.onrender.com`);
 });
